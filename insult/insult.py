@@ -1,49 +1,33 @@
-import aiohttp
 import discord
-from redbot.core import commands
+from discord.ext import commands
+from .utils.dataIO import fileIO
+from random import choice as randchoice
+import os
 
 
-class Insult(commands.Cog):
-    """Polite user messaging."""
+class Insult:
 
-    def __init__(self):
-        self.headers = {
-            'X-Mashape-Key': 'kPgrTWlClqmshjyMDorgCZ0TcS6kp1ePfLUjsnCYR170S2VdWj',
-            'Accept': 'text/plain',
-        }
+    """Airenkun's Insult Cog"""
+    def __init__(self, bot):
+        self.bot = bot
+        self.insults = fileIO("data/insult/insults.json","load")
 
-        self.params = {
-            'mode': 'random',
-        }
+    @commands.command(pass_context=True, no_pm=True)
+    async def insult(self, ctx, user : discord.Member=None):
+        """Insult the user"""
 
-    def getActors(self, bot, offender, target):
-        return {'id': bot.id, 'nick': bot.display_name, 'formatted': bot.mention}, {'id': offender.id, 'nick': offender.display_name, 'formatted': "<@{}>".format(offender.id)}, {'id': target.id, 'nick': target.display_name, 'formatted': target.mention}
+        msg = ' '
+        if user != None:
+            if user.id == self.bot.user.id:
+                user = ctx.message.author
+                msg = " How original. No one else had thought of trying to get the bot to insult itself. I applaud your creativity. Yawn. Perhaps this is why you don't have friends. You don't add anything new to any conversation. You are more of a bot than me, predictable answers, and absolutely dull to have an actual conversation with."
+                await self.bot.say(user.mention + msg)
+            else:
+                await self.bot.say(user.mention + msg + randchoice(self.insults))
+        else:
+            await self.bot.say(ctx.message.author.mention + msg + randchoice(self.insults))
 
-    @commands.command()
-    async def insult(self, ctx, user: discord.Member):
-        """Tell user what you think of them!"""
-        if not user:
-            await ctx.send_help()
-            return
 
-        async with aiohttp.ClientSession(headers=self.headers) as session:
-            async with session.get('https://lakerolmaker-insult-generator-v1.p.mashape.com/', params=self.params) as resp:
+def setup(bot):
+    bot.add_cog(Insult(bot))
 
-                if (resp.status == 200):
-
-                    bot, offender, target = self.getActors(
-                        ctx.bot.user, ctx.message.author, user)
-
-                    text = await resp.text()
-
-                    if target['id'] == bot['id']:
-                        insult = "{}, {}!".format(
-                            offender['formatted'], text.lower())
-                    else:
-                        insult = "{}, {}!".format(
-                            target['formatted'], text.lower())
-
-                    await ctx.send(insult)
-
-                else:
-                    await ctx.send("I've got nothing to say to the likes of you (Code {})".format(resp.status))
