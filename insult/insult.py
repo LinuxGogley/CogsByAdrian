@@ -11,7 +11,7 @@ class Insult:
     def __init__(self, bot):
         fo = open("data/insults.json","r")
         self.bot = bot
-        self.insults = fo.open """fileIO("data/insults.json","load")"""
+        self.insults = fo.open
         fo.close
 
     @commands.command(pass_context=True, no_pm=True)
