@@ -8,7 +8,7 @@ class Insult:
 
     """Airenkun's Insult Cog"""
     def __init__(self, bot):
-        fo = open("data/insults.json","r")
+        fo = open("insults.json","r")
         self.bot = bot
         self.insults = fo.open
         fo.close
