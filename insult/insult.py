@@ -9,8 +9,10 @@ class Insult:
 
     """Airenkun's Insult Cog"""
     def __init__(self, bot):
+        fo = open("data/insults.json","r")
         self.bot = bot
-        self.insults = fileIO("data/insult/insults.json","load")
+        self.insults = fo.open """fileIO("data/insults.json","load")"""
+        fo.close
 
     @commands.command(pass_context=True, no_pm=True)
     async def insult(self, ctx, user : discord.Member=None):
@@ -26,8 +28,4 @@ class Insult:
                 await self.bot.say(user.mention + msg + randchoice(self.insults))
         else:
             await self.bot.say(ctx.message.author.mention + msg + randchoice(self.insults))
-
-
-def setup(bot):
-    bot.add_cog(Insult(bot))
 
