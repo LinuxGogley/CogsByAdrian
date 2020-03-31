@@ -1,6 +1,5 @@
 import discord
 from redbot.core import commands
-from .utils.dataIO import fileIO
 from random import choice as randchoice
 import os
 
